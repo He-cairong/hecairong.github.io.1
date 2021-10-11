@@ -1,5 +1,6 @@
 # 網頁程式設計
 超連結
+各位親愛的小朋友，為了讓您雍有歡樂的暑假時光，快樂動物園特地為大家開闢了數個園區......
 <ul type="corcle">
   <li><a href="africa.html">非洲動物區</a></li>
   <li><a href="asia.html">亞洲動物區</a></li>
