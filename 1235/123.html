@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- <script type="text/javascript" src="demo.js"></script> -->
+</head>
+<style type="text/css">
+ *{
+ margin: 0;
+ padding: 0;
+ }
+ ul{
+ list-style: none;
+ }
+ a{
+    text-decoration: none;
+  }
+ #container{
+ position: relative;
+ width: 500px;
+ height: 260px;
+ margin: 20px auto;
+ overflow: hidden; /*溢位隱藏：只顯示一張圖片*/
+ }
+ #container .parent{
+ position: absolute;
+ width: 2500px; /*整個圖片層長度：500*5=2500*/
+ height: 260px;
+ }
+ 
+ #container .parent li{
+ float: left;
+ width: 500px;
+ height: 100%;
+ }
+ #container .parent li img{
+ width: 100%;
+ height: 100%;
+ }
+ #container .btnLeft,#container .btnRight{
+ width: 30px;
+   height: 30px;
+   background-color: #9E9E9E;
+   border-radius: 20%;
+   opacity: 80%;
+   position: absolute; /*包含塊為圖片顯示層container*/
+   top: 0;
+   bottom: 0;
+   margin: auto;
+   font-size: 20px;
+   color: #f40;
+   text-align: center;
+   line-height: 30px;
+ }
+ #container .btnLeft{
+   left: 10px;
+ }
+ #container .btnRight{
+ right: 10px;
+ }
+ #container .btnLeft:hover,#container .btnRight:hover{
+ opacity: 90%;
+ cursor: pointer;
+ }
+ /*蒙層*/
+ #container .modal{
+ width: 100%;
+ height: 40px;
+ background: rgba(0,.3);
+ position: absolute;
+ left: 0;
+ bottom: 0;
+ line-height: 40px;
+ padding: 0 40px;
+ box-sizing: border-box;
+ }
+ #container .modal .title{
+ float: left;
+ color: #fff;
+ font-size: 12px;
+ }
+ #container .modal .dots{
+ float: right;
+ position: absolute;
+ bottom: 10px;
+ left: 340px;
+ }
+ #container .modal .dots li{
+ width: 15px;
+ height: 15px;
+ border-radius: 50%;
+ float: left;
+ /*可以使用行塊盒*/
+ /*display: inline-block;*/
+ margin: 0 5px;
+ cursor: pointer;
+ }
+ .clearfix::after{
+ content: "";
+ display: block;
+ clear: both;
+ }
+ .on{
+ background-color: red;
+ }
+ .off{
+ background-color: gray;
+ }
+</style>
+<body>
+<div id="container">
+ <ul class="parent" style="left: 0;">
+ <li><img src="1.jpg"></li>
+ <li><img src="2.jpg"></li>
+ <li><img src="3.jpg"></li>
+ <li><img src="4.jpg"></li> 
+ <li><img src="5.jpg"></li>
+</ul>
+
+ <div class="btnLeft">&lt;</div>
+ <div class="btnRight">&gt;</div>
+ <div class="modal">
+ <div class="title">
+ </div>
+ <div class="dots">
+  <ul class="clearfix">
+  <li class="on"></li>
+  <li class="off"></li>
+  <li class="off"></li>
+  <li class="off"></li>
+  <li class="off"></li>
+  </ul>
+ </div>
+ </div>
+</div>
+<script type="text/javascript">
+ 
+var imgShow = document.getElementsByClassName('parent')[0],dotList = document.querySelectorAll('.dots >.clearfix > li');
+var btnLeft = document.getElementsByClassName('btnLeft')[0],btnRight = document.getElementsByClassName('btnRight')[0];
+var dotLen = dotList.length,index = 0; //輪播層的圖片索引，0表示第一張
+
+//圓點顯示
+function showRadius() {
+ for(var i = 0; i < dotLen; i++) {
+ if(dotList[i].className === "on"){
+  dotList[i].className = "off";
+ }
+ }
+ dotList[index].className = "on";
+}
+
+//向左移動
+btnLeft.onclick = function() {
+ index--;
+  if(index < 0){ /*第1張向左時，變為第5張*/
+    index = 4;
+  }
+  showRadius();
+ var left;
+ var imgLeft = imgShow.style.left;
+ if(imgLeft === "0px") { /*當是第1張時，每張圖片左移，移4張圖，位置為-(4*500)*/
+ left = -2000;
+ }
+ else{
+ left = parseInt(imgLeft) + 500; /*由於left為負數，每左移一張加500*/
+ }
+ imgShow.style.left = left + "px";
+}
+
+//向右移動
+btnRight.onclick = function() {
+ index++;
+  if(index > 4){ /*第5張向右時，變為第1張*/
+    index = 0;
+  }
+  showRadius();
+ var right;
+ var imgLeft = imgShow.style.left;
+ if(imgLeft === "-2000px") { /*當是第5張時，第1張的位置為0*/
+ right = 0;
+ }
+ else{
+ right = parseInt(imgLeft) - 500; /*由於left為負數，每右移一張減500*/
+ }
+ imgShow.style.left = right + "px";
+}
+
+var timer;
+function autoPlay() {
+ timer = setInterval(function() {
+ var right;
+ var imgLeft = imgShow.style.left;
+ if(imgLeft === "-2000px") {
+  right = 0;
+ }
+ else{
+  right = parseInt(imgLeft) - 500;
+ }
+ imgShow.style.left = right + "px";
+ },1000)
+}
+autoPlay();
+
+for(var i = 0; i < dotLen; i++) {
+  /*利用閉包傳遞索引*/
+  (function(i) {
+    dotList[i].onclick = function() {
+     var dis = index - i; //當前位置和點選的距離
+     imgShow.style.left = (parseInt(imgShow.style.left) + dis * 500) + "px";
+     index = i; //顯示當前位置的圓點
+     showRadius();
+   }
+  })(i);
+}
+
+</script>
+
+</body>
+</html>
